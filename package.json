@@ -1,6 +1,6 @@
 {
     "name": "watched-object",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "description": "A simple JS object that emit events when used or altered",
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",
@@ -8,7 +8,8 @@
     "scripts": {
         "lint": "eslint --ignore-path .gitignore --ext .js,.jsx,.ts,.tsx .",
         "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.jsx,.ts,.tsx .",
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "build": "npx -p typescript tsc"
     },
     "keywords": [
         "javascript",
