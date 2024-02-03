@@ -1,6 +1,6 @@
 {
     "name": "watched-object",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A simple JS object that emit events when altered",
     "main": "./lib/index.js",
     "type": "module",
@@ -16,6 +16,7 @@
         "watcher",
         "object"
     ],
+    "homepage": "https://github.com/ThalesQwerty/watched-object",
     "author": "ThalesQwerty",
     "license": "ISC",
     "devDependencies": {
