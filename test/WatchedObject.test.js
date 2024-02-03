@@ -9,6 +9,39 @@ function delay(milliseconds = 0) {
 }
 
 describe("WatchedObject", () => {
+    describe("Read event", () => {
+        let readEvent;
+
+        const { proxy, watcher } = new WatchedObject({
+            a: 1,
+            b: 2,
+            c: 3,
+            ignoredKey: 0
+        }, { ignoreKeys: ["ignoredKey"] });
+
+        watcher.on("read", event => {
+            readEvent = event;
+        });
+
+        proxy.ignoredKey;
+        expect(readEvent).toBeUndefined();
+
+        proxy.a;
+        expect(readEvent).toEqual({ propertyName: "a", value: 1 });
+
+        proxy.b = 20;
+        expect(readEvent).toEqual({ propertyName: "a", value: 1 });
+
+        proxy.a = proxy.b;
+        expect(readEvent).toEqual({ propertyName: "b", value: 20 });
+
+        proxy.a;
+        expect(readEvent).toEqual({ propertyName: "a", value: 20 });
+
+        proxy.c;
+        expect(readEvent).toEqual({ propertyName: "c", value: 3 });
+    });
+    
     describe("Write event", () => {
         test("Primitives", () => {
             let writeEvent;
@@ -18,7 +51,7 @@ describe("WatchedObject", () => {
                 b: 2,
                 c: 3,
                 ignoredKey: 0
-            }, ["ignoredKey"]);
+            }, { ignoreKeys: ["ignoredKey"] });
             
             watcher.on("write", event => {
                 writeEvent = event;
@@ -81,7 +114,7 @@ describe("WatchedObject", () => {
                 b: 2,
                 c: 3,
                 ignoredKey: 0
-            }, ["ignoredKey"]);
+            }, { ignoreKeys: ["ignoredKey"] });
 
             watcher.on("change", event => {
                 changeEvent = event;
