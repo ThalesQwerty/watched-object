@@ -1,6 +1,6 @@
 {
     "name": "watched-object",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A simple JS object that emit events when altered",
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",

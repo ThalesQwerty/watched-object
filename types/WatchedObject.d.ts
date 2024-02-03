@@ -24,8 +24,8 @@ export class WatchedObject<T extends Record<string, any>> {
  * @template {Record<string, any>} T
  * @extends {TypedEmitter<{
     "change": (event: {newValues: Partial<T>, oldValues: Partial<T>}) => void,
-    "write": <K extends keyof T>(event: {propertyName: K, oldValue: T[K], newValue: T[K]}) => void,
-    "call": <K extends keyof T>(event: {methodName: K, parameters: Parameters<T[K]>, returnedValue: ReturnValue<T[K]>}) => void
+    "write": (event: {[K in keyof T]: {propertyName: K, oldValue: T[K], newValue: T[K]}}[keyof T]) => void,
+    "call": (event: {[K in keyof T]: {methodName: K, parameters: Parameters<T[K]>, returnedValue: ReturnValue<T[K]>}}[keyof T]) => void
  * }>}
  */
 declare class Watcher<T extends Record<string, any>> extends TypedEmitter<{
@@ -33,16 +33,16 @@ declare class Watcher<T extends Record<string, any>> extends TypedEmitter<{
         newValues: Partial<T>;
         oldValues: Partial<T>;
     }) => void;
-    write: <K extends keyof T>(event: {
+    write: (event: { [K in keyof T]: {
         propertyName: K;
         oldValue: T[K];
         newValue: T[K];
-    }) => void;
-    call: <K_1 extends keyof T>(event: {
+    }; }[keyof T]) => void;
+    call: (event: { [K_1 in keyof T]: {
         methodName: K_1;
         parameters: Parameters<T[K_1]>;
         returnedValue: ReturnValue<T[K_1]>;
-    }) => void;
+    }; }[keyof T]) => void;
 }> {
     constructor();
 }

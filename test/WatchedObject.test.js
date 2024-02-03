@@ -21,9 +21,6 @@ describe("WatchedObject", () => {
             }, ["ignoredKey"]);
             
             watcher.on("write", event => {
-                if (event.propertyName === "a") {
-                    event.newValue
-                }
                 writeEvent = event;
             });
 
@@ -195,7 +192,7 @@ describe("WatchedObject", () => {
             let callEvent;
 
             const { proxy, watcher } = new WatchedObject({
-                sum(a, b) {
+                sum(a = 0, b = 0) {
                     return a + b;
                 }
             });
