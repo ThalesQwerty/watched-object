@@ -19,8 +19,11 @@ describe("WatchedObject", () => {
                 c: 3,
                 ignoredKey: 0
             }, ["ignoredKey"]);
-
+            
             watcher.on("write", event => {
+                if (event.propertyName === "a") {
+                    event.newValue
+                }
                 writeEvent = event;
             });
 

@@ -1,8 +1,9 @@
 {
     "name": "watched-object",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A simple JS object that emit events when altered",
     "main": "./lib/index.js",
+    "types": "./types/index.d.ts",
     "type": "module",
     "scripts": {
         "lint": "eslint --ignore-path .gitignore --ext .js,.jsx,.ts,.tsx .",
@@ -20,7 +21,8 @@
     "author": "ThalesQwerty",
     "license": "ISC",
     "devDependencies": {
-        "eslint": "^8.45.0"
+        "eslint": "^8.45.0",
+        "typescript": "^5.3.3"
     },
     "dependencies": {
         "jest": "^28.1.3",
