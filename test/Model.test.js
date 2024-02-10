@@ -1,4 +1,4 @@
-import { WatchedObject } from "../lib/WatchedObject";
+import { Model } from "../lib/Model";
 
 function delay(milliseconds = 0) {
     return new Promise((resolve) => {
@@ -8,11 +8,11 @@ function delay(milliseconds = 0) {
     });
 }
 
-describe("WatchedObject", () => {
-    describe("Read event", () => {
+describe("Model", () => {
+    test("Read event", () => {
         let readEvent;
 
-        const { proxy, watcher } = new WatchedObject({
+        const { controller, watcher } = new Model({
             a: 1,
             b: 2,
             c: 3,
@@ -23,22 +23,22 @@ describe("WatchedObject", () => {
             readEvent = event;
         });
 
-        proxy.ignoredKey;
+        controller.ignoredKey;
         expect(readEvent).toBeUndefined();
 
-        proxy.a;
+        controller.a;
         expect(readEvent).toEqual({ propertyName: "a", value: 1 });
 
-        proxy.b = 20;
+        controller.b = 20;
         expect(readEvent).toEqual({ propertyName: "a", value: 1 });
 
-        proxy.a = proxy.b;
+        controller.a = controller.b;
         expect(readEvent).toEqual({ propertyName: "b", value: 20 });
 
-        proxy.a;
+        controller.a;
         expect(readEvent).toEqual({ propertyName: "a", value: 20 });
 
-        proxy.c;
+        controller.c;
         expect(readEvent).toEqual({ propertyName: "c", value: 3 });
     });
     
@@ -46,7 +46,7 @@ describe("WatchedObject", () => {
         test("Primitives", () => {
             let writeEvent;
 
-            const { proxy, watcher } = new WatchedObject({
+            const { controller, watcher } = new Model({
                 a: 1,
                 b: 2,
                 c: 3,
@@ -57,23 +57,23 @@ describe("WatchedObject", () => {
                 writeEvent = event;
             });
 
-            proxy.ignoredKey = 1;
+            controller.ignoredKey = 1;
             expect(writeEvent).toBeUndefined();
 
-            proxy.a = 10;
+            controller.a = 10;
             expect(writeEvent).toEqual({ propertyName: "a", oldValue: 1, newValue: 10 });
 
-            proxy.b = 20;
+            controller.b = 20;
             expect(writeEvent).toEqual({ propertyName: "b", oldValue: 2, newValue: 20 });
 
-            proxy.c = 30;
+            controller.c = 30;
             expect(writeEvent).toEqual({ propertyName: "c", oldValue: 3, newValue: 30 });
         });
 
         test("Objects", () => {
             let writeEvent;
 
-            const { proxy, watcher } = new WatchedObject({
+            const { controller, watcher } = new Model({
                 obj: {
                     x: 0,
                     y: 1
@@ -84,12 +84,12 @@ describe("WatchedObject", () => {
                 writeEvent = event;
             });
 
-            const oldObj = proxy.obj;
+            const oldObj = controller.obj;
 
-            proxy.obj.y = 0;
+            controller.obj.y = 0;
             expect(writeEvent).toEqual({ propertyName: "obj", oldValue: oldObj, newValue: oldObj });
 
-            const newObj = proxy.obj = {
+            const newObj = controller.obj = {
                 x: 1,
                 y: 0
             };
@@ -100,8 +100,39 @@ describe("WatchedObject", () => {
             oldObj.z = -1;
             expect(writeEvent).toBeUndefined();
 
-            proxy.obj.z = -1;
+            controller.obj.z = -1;
             expect(writeEvent).toEqual({ propertyName: "obj", oldValue: newObj, newValue: newObj });
+        });
+
+        test("Immutability", () => {
+            let writeEvent;
+
+            const mutableModel = new Model({
+                a: 1
+            }, { mutable: true });
+
+            const immutableModel = new Model({
+                x: 1
+            }, { mutable: false });
+            
+            mutableModel.watcher.on("write", event => {
+                writeEvent = event;
+            });
+
+            immutableModel.watcher.on("write", event => {
+                writeEvent = event;
+            });
+
+            const { controller: mutable } = mutableModel;
+            const { controller: immutable } = immutableModel;
+
+            mutable.a = 10;
+            expect(writeEvent).toEqual({ propertyName: "a", oldValue: 1, newValue: 10 });
+            expect(mutable.a).toBe(10);
+
+            immutable.x = 10;
+            expect(writeEvent).toEqual({ propertyName: "x", oldValue: 1, newValue: 10 });
+            expect(immutable.x).toBe(1);
         });
     });
 
@@ -109,7 +140,7 @@ describe("WatchedObject", () => {
         test("Primitives", async () => {
             let changeEvent;
 
-            const { proxy, watcher } = new WatchedObject({
+            const { controller, watcher } = new Model({
                 a: 1,
                 b: 2,
                 c: 3,
@@ -120,19 +151,19 @@ describe("WatchedObject", () => {
                 changeEvent = event;
             });
 
-            proxy.a = 1;
-            proxy.b = 2;
-            proxy.c = 3;
+            controller.a = 1;
+            controller.b = 2;
+            controller.c = 3;
             await delay();
 
             expect(changeEvent).toBeUndefined();
 
-            proxy.ignoredKey = 3;
+            controller.ignoredKey = 3;
             await delay();
 
             expect(changeEvent).toBeUndefined();
 
-            proxy.a = 10;
+            controller.a = 10;
             await delay();
 
             expect(changeEvent).toBeDefined();
@@ -140,9 +171,9 @@ describe("WatchedObject", () => {
                 a: 10
             });
 
-            proxy.a = 100;
-            proxy.b = 200;
-            proxy.c = 300;
+            controller.a = 100;
+            controller.b = 200;
+            controller.c = 300;
             await delay();
 
             expect(changeEvent).toBeDefined();
@@ -152,7 +183,7 @@ describe("WatchedObject", () => {
                 c: 300
             });
 
-            proxy.ignoredKey = 400;
+            controller.ignoredKey = 400;
             await delay();
 
             expect(changeEvent).toBeDefined();
@@ -166,7 +197,7 @@ describe("WatchedObject", () => {
         test("Objects", async () => {
             let changeEvent;
 
-            const { proxy, watcher } = new WatchedObject({
+            const { controller, watcher } = new Model({
                 obj: {
                     x: 0,
                     y: 0
@@ -178,13 +209,13 @@ describe("WatchedObject", () => {
                 changeEvent = event;
             });
 
-            proxy.obj.x = 0;
-            proxy.obj.y = 0;
+            controller.obj.x = 0;
+            controller.obj.y = 0;
             await delay();
 
             expect(changeEvent).toBeUndefined();
 
-            proxy.obj = {
+            controller.obj = {
                 x: 0,
                 y: 1
             };
@@ -198,7 +229,7 @@ describe("WatchedObject", () => {
                 }
             });
 
-            proxy.obj.x = 1;
+            controller.obj.x = 1;
             await delay();
 
             expect(changeEvent).toBeDefined();
@@ -209,8 +240,8 @@ describe("WatchedObject", () => {
                 }
             });
 
-            proxy.arr.push(3);
-            proxy.arr.shift();
+            controller.arr.push(3);
+            controller.arr.shift();
             await delay();
 
             expect(changeEvent).toBeDefined();
@@ -224,7 +255,7 @@ describe("WatchedObject", () => {
         test("Functions", () => {
             let callEvent;
 
-            const { proxy, watcher } = new WatchedObject({
+            const { controller, watcher } = new Model({
                 sum(a = 0, b = 0) {
                     return a + b;
                 }
@@ -234,7 +265,7 @@ describe("WatchedObject", () => {
                 callEvent = event;
             });
 
-            const result = proxy.sum(7, 5);
+            const result = controller.sum(7, 5);
 
             expect(result).toBe(12);
             expect(callEvent).toEqual({ methodName: "sum", parameters: [7, 5], returnedValue: 12 });

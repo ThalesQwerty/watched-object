@@ -1,31 +1,42 @@
 /**
- * @template {Record<string, any>}  T
+ * A watched object
+ *
+ * @template {Record<string, any>} T
+ *
  */
-export class WatchedObject<T extends Record<string, any>> {
+export class Model<T extends Record<string, any>> {
     /**
      * @param {T} source
-     * @param {{
-     *  ignoreKeys?: (keyof T)[],
-     *  events?: (keyof WatcherEvent<T>)[]
-     * }} config
+     * @param {Config} config
      */
-    constructor(source: T, config?: {
-        ignoreKeys?: (keyof T)[];
-        events?: (keyof WatcherEvent<T>)[];
-    });
+    constructor(source: T, config?: Config);
     /**
+     * Use this to change the values of the `soruce` object`
+     *
      * @type {T}
+     * @readonly
      */
-    proxy: T;
+    readonly controller: T;
     /**
+     * Original object
+     *
      * @type {T}
+     * @readonly
      */
-    source: T;
+    readonly source: T;
     /**
+     * Emits events whenever the `controller` is used or altered in some way.
+     *
      * @type {Watcher<T>}
+     * @readonly
      */
-    watcher: Watcher<T>;
+    readonly watcher: Watcher<T>;
 }
+export type Config = {
+    ignoreKeys?: (keyof T)[];
+    events?: (keyof WatcherEvent<T>)[];
+    mutable?: boolean;
+};
 export type WatcherEvent<T extends Record<string, any>> = {
     change: (event: {
         newValues: Partial<T>;
@@ -47,6 +58,13 @@ export type WatcherEvent<T extends Record<string, any>> = {
     } : never; }[keyof T]) => void;
 };
 /**
+ * @typedef {{
+ *   ignoreKeys?: (keyof T)[],
+ *   events?: (keyof WatcherEvent<T>)[],
+ *   mutable?: boolean
+ * }} Config
+ */
+/**
  * @template {Record<string, any>} T
  * @typedef {{
     "change": (event: {newValues: Partial<T>, oldValues: Partial<T>}) => void,
@@ -64,4 +82,4 @@ declare class Watcher<T extends Record<string, any>> extends TypedEmitter<Watche
 }
 import { TypedEmitter } from "tiny-typed-emitter";
 export {};
-//# sourceMappingURL=WatchedObject.d.ts.map
+//# sourceMappingURL=Model.d.ts.map
