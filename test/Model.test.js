@@ -27,19 +27,19 @@ describe("Model", () => {
         expect(readEvent).toBeUndefined();
 
         controller.a;
-        expect(readEvent).toEqual({ propertyName: "a", value: 1 });
+        expect(readEvent).toEqual({ key: "a", value: 1 });
 
         controller.b = 20;
-        expect(readEvent).toEqual({ propertyName: "a", value: 1 });
+        expect(readEvent).toEqual({ key: "a", value: 1 });
 
         controller.a = controller.b;
-        expect(readEvent).toEqual({ propertyName: "b", value: 20 });
+        expect(readEvent).toEqual({ key: "b", value: 20 });
 
         controller.a;
-        expect(readEvent).toEqual({ propertyName: "a", value: 20 });
+        expect(readEvent).toEqual({ key: "a", value: 20 });
 
         controller.c;
-        expect(readEvent).toEqual({ propertyName: "c", value: 3 });
+        expect(readEvent).toEqual({ key: "c", value: 3 });
     });
     
     describe("Write event", () => {
@@ -61,13 +61,13 @@ describe("Model", () => {
             expect(writeEvent).toBeUndefined();
 
             controller.a = 10;
-            expect(writeEvent).toEqual({ propertyName: "a", oldValue: 1, newValue: 10 });
+            expect(writeEvent).toEqual({ key: "a", oldValue: 1, newValue: 10 });
 
             controller.b = 20;
-            expect(writeEvent).toEqual({ propertyName: "b", oldValue: 2, newValue: 20 });
+            expect(writeEvent).toEqual({ key: "b", oldValue: 2, newValue: 20 });
 
             controller.c = 30;
-            expect(writeEvent).toEqual({ propertyName: "c", oldValue: 3, newValue: 30 });
+            expect(writeEvent).toEqual({ key: "c", oldValue: 3, newValue: 30 });
         });
 
         test("Objects", () => {
@@ -87,13 +87,13 @@ describe("Model", () => {
             const oldObj = controller.obj;
 
             controller.obj.y = 0;
-            expect(writeEvent).toEqual({ propertyName: "obj", oldValue: oldObj, newValue: oldObj });
+            expect(writeEvent).toEqual({ key: "obj", oldValue: oldObj, newValue: oldObj });
 
             const newObj = controller.obj = {
                 x: 1,
                 y: 0
             };
-            expect(writeEvent).toEqual({ propertyName: "obj", oldValue: oldObj, newValue: newObj });
+            expect(writeEvent).toEqual({ key: "obj", oldValue: oldObj, newValue: newObj });
 
             writeEvent = undefined;
             
@@ -101,7 +101,7 @@ describe("Model", () => {
             expect(writeEvent).toBeUndefined();
 
             controller.obj.z = -1;
-            expect(writeEvent).toEqual({ propertyName: "obj", oldValue: newObj, newValue: newObj });
+            expect(writeEvent).toEqual({ key: "obj", oldValue: newObj, newValue: newObj });
         });
 
         test("Immutability", () => {
@@ -127,11 +127,11 @@ describe("Model", () => {
             const { controller: immutable } = immutableModel;
 
             mutable.a = 10;
-            expect(writeEvent).toEqual({ propertyName: "a", oldValue: 1, newValue: 10 });
+            expect(writeEvent).toEqual({ key: "a", oldValue: 1, newValue: 10 });
             expect(mutable.a).toBe(10);
 
             immutable.x = 10;
-            expect(writeEvent).toEqual({ propertyName: "x", oldValue: 1, newValue: 10 });
+            expect(writeEvent).toEqual({ key: "x", oldValue: 1, newValue: 10 });
             expect(immutable.x).toBe(1);
         });
     });

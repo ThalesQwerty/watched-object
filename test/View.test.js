@@ -17,9 +17,9 @@ describe("View", () => {
                 sum: [1, 2, 3, 4]
             });
 
-            const { view: mapAll } = new View(model);
-            const { view: mapSome } = new View(model, ["name", "age"]);
-            const { view: mapNone } = new View(model, []);
+            const { model: mapAll } = new View(model);
+            const { model: mapSome } = new View(model, ["name", "age"]);
+            const { model: mapNone } = new View(model, []);
 
             expect(mapAll.controller.name).toBe("Thales");
             expect(mapAll.controller.age).toBe(23);
@@ -57,7 +57,7 @@ describe("View", () => {
                 sum: [1, 2, 3, 4]
             });
 
-            const { view } = new View(model, {
+            const view = new View(model, {
                 name: "name",
                 years: "age",
                 months: m => m.age * 12,
@@ -104,13 +104,13 @@ describe("View", () => {
             });
 
             controller.a = 10;
-            expect(writeEvent).toEqual({ propertyName: "x", oldValue: 1, newValue: 10 });
+            expect(writeEvent).toEqual({ key: "x", oldValue: 1, newValue: 10 });
 
             controller.b = 20;
-            expect(writeEvent).toEqual({ propertyName: "y", oldValue: 6, newValue: 60 });
+            expect(writeEvent).toEqual({ key: "y", oldValue: 6, newValue: 60 });
 
             controller.c = 30;
-            expect(writeEvent).toEqual({ propertyName: "y", oldValue: 60, newValue: 600 });
+            expect(writeEvent).toEqual({ key: "y", oldValue: 60, newValue: 600 });
         });
 
         test("Change Event", async () => {

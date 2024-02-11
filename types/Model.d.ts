@@ -43,11 +43,11 @@ export type WatcherEvent<T extends Record<string, any>> = {
         oldValues: Partial<T>;
     }) => void;
     read: (event: { [K in keyof T]: {
-        propertyName: K;
+        key: K;
         value: T[K];
     }; }[keyof T]) => void;
     write: (event: { [K_1 in keyof T]: {
-        propertyName: K_1;
+        key: K_1;
         oldValue: T[K_1];
         newValue: T[K_1];
     }; }[keyof T]) => void;
@@ -68,8 +68,8 @@ export type WatcherEvent<T extends Record<string, any>> = {
  * @template {Record<string, any>} T
  * @typedef {{
     "change": (event: {newValues: Partial<T>, oldValues: Partial<T>}) => void,
-    "read": (event: {[K in keyof T]: {propertyName: K, value: T[K]}}[keyof T]) => void,
-    "write": (event: {[K in keyof T]: {propertyName: K, oldValue: T[K], newValue: T[K]}}[keyof T]) => void,
+    "read": (event: {[K in keyof T]: {key: K, value: T[K]}}[keyof T]) => void,
+    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}}[keyof T]) => void,
     "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R} : never}[keyof T]) => void
  * }} WatcherEvent
  */

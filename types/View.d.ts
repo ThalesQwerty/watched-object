@@ -1,6 +1,6 @@
 /**
  * @template {Record<string, any>} T
- * @typedef {{ propertyName: keyof T, oldValue: T[keyof T], newValue: T[keyof T] }} WriteEvent<T>
+ * @typedef {{ key: keyof T, oldValue: T[keyof T], newValue: T[keyof T] }} WriteEvent<T>
  */
 /**
  * @template {Record<string, any>} T
@@ -8,22 +8,32 @@
  */
 export class View<T extends Record<string, any>, U extends Record<string, any>> {
     /**
-     * @param {Model<T>} model
-     * @param {(keyof T)[]|Record<keyof U, (keyof T)|((model:T) => U[keyof U])>|null} mapKeys
+     * @param {Model<T>} target
+     * @param {(keyof T)[]|Record<keyof U, (keyof T)|((target:T) => U[keyof U])>|null} mapKeys
      * @param {Types.Config} config
      */
-    constructor(model: Model<T>, mapKeys?: Record<keyof U, keyof T | ((model: T) => U[keyof U])> | (keyof T)[], config?: Types.Config);
+    constructor(targetModel: any, mapKeys?: Record<keyof U, keyof T | ((target: T) => U[keyof U])> | (keyof T)[], config?: Types.Config);
     /**
+     * The model from which this view will be reacting to changes
+     *
      * @type {Model<T>}
      * @readonly
      */
-    readonly model: Model<T>;
+    readonly target: Model<T>;
     /**
+     * The model generated from this view
+     *
      * @type {Model<U>|null}
      * @readonly
      */
-    readonly view: Model<U> | null;
+    readonly model: Model<U> | null;
+    /**
+     * The `controller` of the model generated from this view
+     */
     get controller(): U;
+    /**
+     * The `watcher` (event emitter) of the model generated from this view
+     */
     get watcher(): {
         addListener<U_1 extends keyof Types.WatcherEvent<U>>(event: U_1, listener: Types.WatcherEvent<U>[U_1]): any;
         prependListener<U_2 extends keyof Types.WatcherEvent<U>>(event: U_2, listener: Types.WatcherEvent<U>[U_2]): any;
@@ -41,6 +51,9 @@ export class View<T extends Record<string, any>, U extends Record<string, any>> 
         getMaxListeners(): number;
         setMaxListeners(n: number): any;
     };
+    /**
+     * Permanently disables this view (it won't be updated anymore)
+     */
     destroy(): void;
     #private;
 }
@@ -48,7 +61,7 @@ export class View<T extends Record<string, any>, U extends Record<string, any>> 
  * <T>
  */
 export type WriteEvent<T extends Record<string, any>> = {
-    propertyName: keyof T;
+    key: keyof T;
     oldValue: T[keyof T];
     newValue: T[keyof T];
 };
