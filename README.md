@@ -43,6 +43,7 @@ console.log(writeCounter);
 // in order to group several keys into one single event
 position.watcher.on("change", event => {
     console.log("new position", event.newValues);
+    // > new position { x: [...], y: [...] }
 });
 
 // Change position randomly every second
@@ -57,12 +58,12 @@ Besides the `Model` class, there's also a `View` class that can be used to creat
 ```js
 import { Model, View } from "watched-object";
 
-const rawGradeData = new Model({
+const gradeRawData = new Model({
     grades: [9, 3, 5, 8, 4]
 });
 
 // These values will be automatically updated whenever the grades change
-const gradeStatistics = new View(rawGradeData, {
+const gradeStatistics = new View(gradeRawData, {
     highest: model => Math.max(...model.grades),
     lowest: model => Math.min(...model.grades),
     average: model => model.grades.reduce((sum, grade) => sum + grade, 0) / model.grades.length
@@ -71,8 +72,8 @@ const gradeStatistics = new View(rawGradeData, {
 console.log(gradeStatistics.controller);
 // > { highest: 9, lowest: 4, average: 5.8 }
 
-rawGradeData.controller.grades.push(10);
-rawGradeData.controller.grades.push(0);
+gradeRawData.controller.grades.push(10);
+gradeRawData.controller.grades.push(0);
 
 console.log(gradeStatistics.controller);
 // > { highest: 10, lowest: 0, average: 5.571428571428571 }
@@ -85,7 +86,7 @@ gradeStatistics.watcher.on("write", event => {
     if (event.key === "average") console.log("new average", event.newValue);
 });
 
-rawGradeData.controller.grades.push(7);
+gradeRawData.controller.grades.push(7);
 // > new average 5.75
 
 // And... you can create views of views
@@ -96,7 +97,7 @@ const evenMoreGradeStatistics = new View(gradeStatistics.model, {
 console.log("span", evenMoreGradeStatistics.controller.span);
 // > span 10
 
-rawGradeData.controller.grades = [4, 5, 6];
+gradeRawData.controller.grades = [4, 5, 6];
 // > new average 5
 
 console.log("span", evenMoreGradeStatistics.controller.span);
