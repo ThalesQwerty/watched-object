@@ -9,10 +9,10 @@
 export class View<T extends Record<string, any>, U extends Record<string, any>> {
     /**
      * @param {Model<T>} target
-     * @param {(keyof T)[]|Record<keyof U, (keyof T)|((target:T) => U[keyof U])>|null} mapKeys
+     * @param {(keyof T & keyof U)[] | {[K in keyof U]: (keyof T) | ((this: U, target:T) => U[K])} | null} mapKeys
      * @param {Types.Config} config
      */
-    constructor(targetModel: any, mapKeys?: Record<keyof U, keyof T | ((target: T) => U[keyof U])> | (keyof T)[], config?: Types.Config);
+    constructor(targetModel: any, mapKeys?: { [K in keyof U]: keyof T | ((this: U, target: T) => U[K]); } | (keyof T & keyof U)[], config?: Types.Config);
     /**
      * The model from which this view will be reacting to changes
      *
@@ -26,7 +26,11 @@ export class View<T extends Record<string, any>, U extends Record<string, any>> 
      * @type {Model<U>|null}
      * @readonly
      */
-    readonly model: Model<U> | null;
+    readonly self: Model<U> | null;
+    /**
+     * The model generated from this view
+     */
+    get model(): Model<U>;
     /**
      * The `controller` of the model generated from this view
      */

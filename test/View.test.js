@@ -80,10 +80,39 @@ describe("View", () => {
             expect(view.controller.sum).toBe(15);
             expect(view.controller.age).toBeUndefined();
         });
+
+        test("Self inferrences", () => {
+            const model = new Model({
+                grades: [4, 5, 6]
+            });
+
+            const view = new View(model, {
+                lowest(model) {
+                    return Math.min(...model.grades);
+                },
+                highest(model) {
+                    return Math.max(...model.grades);
+                },
+                span() {
+                    return this.highest - this.lowest
+                } 
+            });
+
+            expect(view.controller.lowest).toBe(4);
+            expect(view.controller.highest).toBe(6);
+            expect(view.controller.span).toBe(2);
+
+            model.controller.grades.push(7);
+            model.controller.grades.push(3);
+
+            expect(view.controller.lowest).toBe(3);
+            expect(view.controller.highest).toBe(7);
+            expect(view.controller.span).toBe(4);
+        });
     });
 
     describe("Events", () => {
-        test("Write Event", () => {
+        test("Write event", () => {
             let writeEvent;
 
             const model = new Model({
@@ -113,7 +142,7 @@ describe("View", () => {
             expect(writeEvent).toEqual({ key: "y", oldValue: 60, newValue: 600 });
         });
 
-        test("Change Event", async () => {
+        test("Change event", async () => {
             let changeEvent;
 
             const model = new Model({
@@ -149,5 +178,49 @@ describe("View", () => {
             await delay();
             expect(changeEvent).toEqual({ oldValues: { ac: 30, bc: 60, abc: 600 }, newValues: { ac: 300, bc: 600, abc: 6000 } });
         });
-    })
+
+        test("Disable events", () => {
+            let writeEvent;
+
+            const model = new Model({
+                a: 1
+            });
+
+            const { controller } = model;
+
+            const view = new View(model, {
+                x: "a"
+            });
+            
+            const { watcher } = view;
+
+            watcher.on("write", event => {
+                writeEvent = event;
+            });
+
+            expect(view.controller.x).toBe(1);
+
+            controller.a = 10;
+            expect(writeEvent).toEqual({ key: "x", oldValue: 1, newValue: 10 });
+            expect(view.controller.x).toBe(10);
+            expect(model.controller.a).toBe(10);
+
+            controller.a = 20;
+            expect(writeEvent).toEqual({ key: "x", oldValue: 10, newValue: 20 });
+            expect(view.controller.x).toBe(20);
+            expect(model.controller.a).toBe(20);
+
+            view.destroy();
+
+            controller.a = 30;
+            expect(writeEvent).toEqual({ key: "x", oldValue: 10, newValue: 20 });
+            expect(view.controller.x).toBe(20);
+            expect(model.controller.a).toBe(30);
+
+            controller.a = 40;
+            expect(writeEvent).toEqual({ key: "x", oldValue: 10, newValue: 20 });
+            expect(view.controller.x).toBe(20);
+            expect(model.controller.a).toBe(40);
+        });
+    });
 });
