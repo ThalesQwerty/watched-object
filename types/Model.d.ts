@@ -31,31 +31,20 @@ export class Model<T extends Record<string, any>> {
      * @readonly
      */
     readonly watcher: Watcher<T>;
+    /**
+     * Applies a given metadata to events emitted from this model. The metadata will be applied only inside this function.
+     *
+     * @template {Record<string,any>} D
+     * @param {D} metadata The metadata to be used
+     * @param {(controller: T) => void} procedure What to do with the model
+     */
+    useMetadata<D extends Record<string, any>>(metadata: D, procedure: (controller: T) => void): void;
+    #private;
 }
 export type Config = {
     ignoreKeys?: (keyof T)[];
     events?: (keyof WatcherEvent<T>)[];
     mutable?: boolean;
-};
-export type WatcherEvent<T extends Record<string, any>> = {
-    change: (event: {
-        newValues: Partial<T>;
-        oldValues: Partial<T>;
-    }) => void;
-    read: (event: { [K in keyof T]: {
-        key: K;
-        value: T[K];
-    }; }[keyof T]) => void;
-    write: (event: { [K_1 in keyof T]: {
-        key: K_1;
-        oldValue: T[K_1];
-        newValue: T[K_1];
-    }; }[keyof T]) => void;
-    call: (event: { [K_2 in keyof T]: T[K_2] extends (...params: infer P) => infer R ? {
-        methodName: K_2;
-        parameters: P;
-        returnedValue: R;
-    } : never; }[keyof T]) => void;
 };
 /**
  * @typedef {{
@@ -67,10 +56,10 @@ export type WatcherEvent<T extends Record<string, any>> = {
 /**
  * @template {Record<string, any>} T
  * @typedef {{
-    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>}) => void,
-    "read": (event: {[K in keyof T]: {key: K, value: T[K]}}[keyof T]) => void,
-    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}}[keyof T]) => void,
-    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R} : never}[keyof T]) => void
+    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>, metadata?: Record<string, any>}) => void,
+    "read": (event: {[K in keyof T]: {key: K, value: T[K], metadata?: Record<string, any>}}[keyof T]) => void,
+    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}, metadata?: Record<string, any>}[keyof T]) => void,
+    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R, metadata?: Record<string, any>} : never}[keyof T]) => void
  * }} WatcherEvent
  */
 /**

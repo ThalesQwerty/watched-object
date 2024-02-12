@@ -134,6 +134,59 @@ describe("Model", () => {
             expect(writeEvent).toEqual({ key: "x", oldValue: 1, newValue: 10 });
             expect(immutable.x).toBe(1);
         });
+
+        test("Metadata", async () => {
+            let writeEvent;
+            let changeEvent;
+
+            const model = new Model({
+                a: 1,
+                b: 2,
+                c: 3
+            });
+
+            const { watcher, controller } = model;
+            
+            watcher.on("write", event => {
+                writeEvent = event;
+            });
+
+            watcher.on("change", event => {
+                changeEvent = event;
+            });
+            
+            model.useMetadata({ timestamp: 1707762789488 }, controller => {
+                controller.a = 10;
+            });
+ 
+            expect(writeEvent).toEqual({ key: "a", oldValue: 1, newValue: 10, metadata: { timestamp: 1707762789488 } });
+
+            controller.a = 10;
+            expect(writeEvent).toEqual({ key: "a", oldValue: 1, newValue: 10, metadata: { timestamp: 1707762789488 } });
+
+            controller.a = 20;
+            expect(writeEvent).toEqual({ key: "a", oldValue: 10, newValue: 20 });
+
+            model.useMetadata({ author: "ThalesQwerty" }, controller => {
+                controller.a = 20;
+            });
+
+            expect(writeEvent).toEqual({ key: "a", oldValue: 10, newValue: 20 });
+
+            model.useMetadata({ author: "ThalesQwerty" }, controller => {
+                controller.a = 30;
+            });
+
+            expect(writeEvent).toEqual({ key: "a", oldValue: 20, newValue: 30, metadata: { author: "ThalesQwerty" } });
+
+            await delay();
+
+            expect(changeEvent).toEqual({ 
+                oldValues: { a: 1 }, 
+                newValues: { a: 30 },
+                metadata: { timestamp: 1707762789488, author: "ThalesQwerty" } 
+            });
+        })
     });
 
     describe("Change event", () => {
