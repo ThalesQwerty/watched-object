@@ -1,5 +1,5 @@
-import { Model } from "./Model.js";
-import { View } from "./View.js";
+import { Model } from "./Model";
+import { View } from "./View";
 export namespace WatchedObject {
     export { Model };
     export { View };
