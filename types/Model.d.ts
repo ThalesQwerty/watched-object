@@ -46,6 +46,30 @@ export type Config<T extends Record<string, any>> = {
     events?: (keyof WatcherEvent<T>)[];
     mutable?: boolean;
 };
+export type WatcherEvent<T extends Record<string, any>> = {
+    change: (event: {
+        newValues: Partial<T>;
+        oldValues: Partial<T>;
+        metadata?: Record<string, any>;
+    }) => void;
+    read: (event: { [K in keyof T]: {
+        key: K;
+        value: T[K];
+        metadata?: Record<string, any>;
+    }; }[keyof T]) => void;
+    write: (event: { [K_1 in keyof T]: {
+        key: K_1;
+        oldValue: T[K_1];
+        newValue: T[K_1];
+        metadata?: Record<string, any>;
+    }; }[keyof T]) => void;
+    call: (event: { [K_2 in keyof T]: T[K_2] extends (...params: infer P) => infer R ? {
+        methodName: K_2;
+        parameters: P;
+        returnedValue: R;
+        metadata?: Record<string, any>;
+    } : never; }[keyof T]) => void;
+};
 /**
  * @template {Record<string, any>} T
  * @typedef {{
@@ -57,10 +81,10 @@ export type Config<T extends Record<string, any>> = {
 /**
  * @template {Record<string, any>} T
  * @typedef {{
-    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>, metadata: Record<string, any>|undefined}) => void,
-    "read": (event: {[K in keyof T]: {key: K, value: T[K], metadata: Record<string, any>|undefined}}[keyof T]) => void,
-    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}, metadata: Record<string, any>|undefined}[keyof T]) => void,
-    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R, metadata: Record<string, any>|undefined} : never}[keyof T]) => void
+    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>, metadata?: Record<string, any>}) => void;
+    "read": (event: {[K in keyof T]: {key: K, value: T[K], metadata?: Record<string, any>}}[keyof T]) => void;
+    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K], metadata?: Record<string, any>}}[keyof T]) => void;
+    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R, metadata?: Record<string, any>} : never}[keyof T]) => void;
  * }} WatcherEvent
  */
 /**
