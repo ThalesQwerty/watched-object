@@ -20,7 +20,7 @@ describe("View", () => {
             const { model: mapAll } = new View(model);
             const { model: mapSome } = new View(model, ["name", "age"]);
             const { model: mapNone } = new View(model, []);
-
+            
             expect(mapAll.controller.name).toBe("Thales");
             expect(mapAll.controller.age).toBe(23);
             expect(mapAll.controller.sum).toEqual([1, 2, 3, 4]);

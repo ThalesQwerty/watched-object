@@ -9,7 +9,7 @@ export class Model<T extends Record<string, any>> {
      * @param {T} source
      * @param {Config} config
      */
-    constructor(source: T, config?: Config);
+    constructor(source: T, config?: any);
     /**
      * Use this to change the values of the `soruce` object`
      *
@@ -41,12 +41,13 @@ export class Model<T extends Record<string, any>> {
     useMetadata<D extends Record<string, any>>(metadata: D, procedure: (controller: T) => void): void;
     #private;
 }
-export type Config = {
+export type Config<T extends Record<string, any>> = {
     ignoreKeys?: (keyof T)[];
     events?: (keyof WatcherEvent<T>)[];
     mutable?: boolean;
 };
 /**
+ * @template {Record<string, any>} T
  * @typedef {{
  *   ignoreKeys?: (keyof T)[],
  *   events?: (keyof WatcherEvent<T>)[],

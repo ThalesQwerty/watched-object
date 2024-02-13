@@ -12,7 +12,7 @@ export class View<T extends Record<string, any>, U extends Record<string, any>> 
      * @param {(keyof T & keyof U)[] | {[K in keyof U]: (keyof T) | ((this: U, target:T, self:T) => U[K])} | null} mapKeys
      * @param {Types.Config} config
      */
-    constructor(targetModel: any, mapKeys?: { [K in keyof U]: keyof T | ((this: U, target: T, self: T) => U[K]); } | (keyof T & keyof U)[], config?: Types.Config);
+    constructor(targetModel: any, mapKeys?: { [K in keyof U]: keyof T | ((this: U, target: T, self: T) => U[K]); } | (keyof T & keyof U)[], config?: any);
     /**
      * The model from which this view will be reacting to changes
      *
@@ -70,5 +70,4 @@ export type WriteEvent<T extends Record<string, any>> = {
     newValue: T[keyof T];
 };
 import { Model } from "./Model.js";
-import * as Types from "./Model.js";
 //# sourceMappingURL=View.d.ts.map
