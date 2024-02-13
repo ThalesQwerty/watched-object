@@ -56,10 +56,10 @@ export type Config = {
 /**
  * @template {Record<string, any>} T
  * @typedef {{
-    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>, metadata?: Record<string, any>}) => void,
-    "read": (event: {[K in keyof T]: {key: K, value: T[K], metadata?: Record<string, any>}}[keyof T]) => void,
-    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}, metadata?: Record<string, any>}[keyof T]) => void,
-    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R, metadata?: Record<string, any>} : never}[keyof T]) => void
+    "change": (event: {newValues: Partial<T>, oldValues: Partial<T>, metadata: Record<string, any>|undefined}) => void,
+    "read": (event: {[K in keyof T]: {key: K, value: T[K], metadata: Record<string, any>|undefined}}[keyof T]) => void,
+    "write": (event: {[K in keyof T]: {key: K, oldValue: T[K], newValue: T[K]}, metadata: Record<string, any>|undefined}[keyof T]) => void,
+    "call": (event: {[K in keyof T]: T[K] extends (...params: infer P) => infer R ? {methodName: K, parameters: P, returnedValue: R, metadata: Record<string, any>|undefined} : never}[keyof T]) => void
  * }} WatcherEvent
  */
 /**

@@ -1,6 +1,6 @@
 {
     "name": "watched-object",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "description": "Objects that emit events whenever used or altered",
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",
